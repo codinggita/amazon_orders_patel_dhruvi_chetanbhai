@@ -1,5 +1,6 @@
 import express from "express";
 import searchRouter from "./orderSearch.route.js";
+import filterRouter from "./orderFilter.route.js";
 
 import {
   getAllOrders,
@@ -26,6 +27,7 @@ const router = express.Router();
 // ✅ SEARCH ROUTES FIRST
 // ======================
 router.use("/search", searchRouter);
+router.use("/filter", filterRouter);
 
 
 // ======================
