@@ -1,4 +1,6 @@
 import express from "express";
+import searchRouter from "./orderSearch.route.js";
+
 import {
   getAllOrders,
   getOrderById,
@@ -18,6 +20,12 @@ import {
 } from "../controllers/order.controller.js";
 
 const router = express.Router();
+
+
+// ======================
+// ✅ SEARCH ROUTES FIRST
+// ======================
+router.use("/search", searchRouter);
 
 
 // ======================
@@ -46,6 +54,5 @@ router.post("/:orderId/cancel", cancelOrder);
 router.post("/:orderId/duplicate", duplicateOrder);
 
 router.get("/:orderId/invoice", getInvoice);
-
 
 export default router;
