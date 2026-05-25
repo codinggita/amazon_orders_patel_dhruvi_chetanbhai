@@ -1,5 +1,5 @@
 import express from "express";
-import orderRoutes from "./routes/order.routes.js";
+import orderRoutes from "./routes/order.route.js";
 
 const app = express();
 
