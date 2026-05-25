@@ -1,365 +1,359 @@
-import Order from "../models/Order.model.js";
+import Order from "../models/order.model.js";
 
-
-// =============================
-// 📦 CRUD
-// =============================
-
-// CREATE
-export const createOrder = async (req, res, next) => {
+/**
+ * GET /api/v1/orders
+ * Fetch all orders (pagination ready)
+ */
+export const getAllOrders = async (req, res) => {
   try {
-    const order = await Order.create(req.body);
-    res.status(201).json({ success: true, data: order });
-  } catch (err) {
-    next(err);
-  }
-};
-
-// GET ALL (pagination + sorting)
-export const getOrders = async (req, res, next) => {
-  try {
-    const { page = 1, limit = 10, sort = "-createdAt" } = req.query;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
 
     const orders = await Order.find()
-      .sort(sort)
       .skip((page - 1) * limit)
-      .limit(Number(limit));
+      .limit(limit)
+      .sort({ createdAt: -1 });
 
-    res.json({ success: true, data: orders });
+    const total = await Order.countDocuments();
+
+    res.json({
+      success: true,
+      page,
+      totalPages: Math.ceil(total / limit),
+      data: orders,
+    });
   } catch (err) {
-    next(err);
+    res.status(500).json({ success: false, message: err.message });
   }
 };
 
-// GET ONE
-export const getOrderById = async (req, res, next) => {
+/**
+ * GET /api/v1/orders/:orderId
+ */
+export const getOrderById = async (req, res) => {
   try {
-    const order = await Order.findOne({ orderId: req.params.orderId });
+    const order = await Order.findOne({ OrderID: req.params.orderId });
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
     res.json({ success: true, data: order });
   } catch (err) {
-    next(err);
+    res.status(500).json({ success: false, message: err.message });
   }
 };
 
-// UPDATE
-export const updateOrder = async (req, res, next) => {
+/**
+ * POST /api/v1/orders
+ */
+export const createOrder = async (req, res) => {
   try {
-    const order = await Order.findOneAndUpdate(
-      { orderId: req.params.orderId },
+    console.log("REQ BODY:", req.body);
+
+    const newOrder = await Order.create(req.body);
+
+    console.log("CREATED ORDER:", newOrder);
+
+    return res.status(201).json({
+      success: true,
+      message: "Order created successfully",
+      data: newOrder,
+    });
+  } catch (err) {
+    console.error("ERROR:", err);
+    return res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
+/**
+ * PUT /api/v1/orders/:orderId
+ * Replace full document
+ */
+export const replaceOrder = async (req, res) => {
+  try {
+    const order = await Order.findOneAndReplace(
+      { OrderID: req.params.orderId },
       req.body,
       { new: true }
     );
+
     res.json({ success: true, data: order });
   } catch (err) {
-    next(err);
+    res.status(500).json({ success: false, message: err.message });
   }
 };
 
-// DELETE
-export const deleteOrder = async (req, res, next) => {
+/**
+ * PATCH /api/v1/orders/:orderId
+ */
+export const updateOrder = async (req, res) => {
   try {
-    await Order.findOneAndDelete({ orderId: req.params.orderId });
-    res.json({ success: true, message: "Deleted" });
+    console.log("Params:", req.params);
+    console.log("Body:", req.body);
+
+    const order = await Order.findOneAndUpdate(
+      { OrderID: req.params.orderId },
+      { $set: req.body },
+      { new: true, runValidators: true }
+    );
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    res.json({ success: true, data: order });
   } catch (err) {
-    next(err);
+    res.status(500).json({ success: false, message: err.message });
   }
 };
 
-
-// =============================
-// 📦 ORDER FEATURES
-// =============================
-
-export const getOrderItems = async (req, res, next) => {
+/**
+ * DELETE /api/v1/orders/:orderId
+ */
+export const deleteOrder = async (req, res) => {
   try {
-    const order = await Order.findOne({ orderId: req.params.orderId });
-    res.json({ success: true, data: order.items });
-  } catch (err) {
-    next(err);
-  }
-};
+    await Order.findOneAndDelete({ OrderID: req.params.orderId });
 
-export const getOrderSummary = async (req, res, next) => {
-  try {
-    const order = await Order.findOne({ orderId: req.params.orderId });
     res.json({
       success: true,
-      data: {
-        totalAmount: order.pricing.totalAmount,
-        items: order.items.length,
-        status: order.orderStatus
-      }
+      message: "Order deleted successfully",
     });
   } catch (err) {
-    next(err);
+    res.status(500).json({ success: false, message: err.message });
   }
 };
 
+/**
+ * GET /api/v1/orders/:orderId/exists
+ */
+export const checkOrderExists = async (req, res) => {
+  try {
+    const exists = await Order.exists({ OrderID: req.params.orderId });
+
+    res.json({
+      success: true,
+      exists: !!exists,
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+/**
+ * GET /api/v1/orders/:orderId/summary
+ */
+export const getOrderSummary = async (req, res) => {
+  try {
+    const order = await Order.findOne({ OrderID: req.params.orderId }).select(
+      "OrderID CustomerName TotalAmount OrderStatus PaymentMethod"
+    );
+
+    res.json({ success: true, data: order });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+/**
+ * GET /api/v1/orders/:orderId/items
+ */
+export const getOrderItems = async (req, res) => {
+  try {
+    const order = await Order.findOne({ OrderID: req.params.orderId }).select(
+      "ProductID ProductName Quantity UnitPrice"
+    );
+
+    res.json({ success: true, data: order });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+/**
+ * GET /api/v1/orders/:orderId/history
+ * (basic mock history since dataset doesn't include it)
+ */
 export const getOrderHistory = async (req, res) => {
-  res.json({ success: true, message: "History feature optional" });
-};
-
-export const archiveOrder = async (req, res, next) => {
   try {
-    const order = await Order.findOneAndUpdate(
-      { orderId: req.params.orderId },
-      { isArchived: true },
-      { new: true }
-    );
-    res.json({ success: true, data: order });
-  } catch (err) {
-    next(err);
-  }
-};
+    const order = await Order.findOne({ OrderID: req.params.orderId });
 
-export const restoreOrder = async (req, res, next) => {
-  try {
-    const order = await Order.findOneAndUpdate(
-      { orderId: req.params.orderId },
-      { isArchived: false },
-      { new: true }
-    );
-    res.json({ success: true, data: order });
-  } catch (err) {
-    next(err);
-  }
-};
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
 
-export const cancelOrder = async (req, res, next) => {
-  try {
-    const order = await Order.findOneAndUpdate(
-      { orderId: req.params.orderId },
-      { orderStatus: "Cancelled" },
-      { new: true }
-    );
-    res.json({ success: true, data: order });
-  } catch (err) {
-    next(err);
-  }
-};
+    const baseDate = order?.OrderDate ? new Date(order.OrderDate) : new Date();
 
-export const duplicateOrder = async (req, res, next) => {
-  try {
-    const order = await Order.findOne({ orderId: req.params.orderId });
-    const newOrder = await Order.create({
-      ...order.toObject(),
-      orderId: "ORD" + Date.now()
+    const productName =
+      order.ProductName ||
+      order?.Product?.name ||
+      "Unknown Product";
+
+    const history = [
+      {
+        status: "Placed",
+        date: baseDate,
+        productName,
+      },
+      {
+        status: order.OrderStatus || "Processing",
+        date: new Date(),
+        productName,
+      },
+    ];
+
+    res.json({
+      success: true,
+      data: history,
     });
+
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
+/**
+ * PATCH /api/v1/orders/:orderId/archive
+ */
+export const archiveOrder = async (req, res) => {
+  try {
+    const updatedOrder = await Order.findOneAndUpdate(
+      { OrderID: req.params.orderId },
+      { $set: { isArchived: true } },
+      {
+        returnDocument: "after",
+        runValidators: true
+      }
+    );
+
+    if (!updatedOrder) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    res.json({
+      success: true,
+      data: updatedOrder,
+    });
+
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
+/**
+ * PATCH /api/v1/orders/:orderId/restore
+ */
+export const restoreOrder = async (req, res) => {
+  try {
+    const order = await Order.findOneAndUpdate(
+      { OrderID: req.params.orderId },
+      { $set: { isArchived: false } },
+      {
+        returnDocument: "after",
+        runValidators: true
+      }
+    );
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    return res.json({
+      success: true,
+      message: "Order restored successfully",
+      data: order,
+    });
+
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+/**
+ * POST /api/v1/orders/:orderId/cancel
+ */
+export const cancelOrder = async (req, res) => {
+  try {
+    const order = await Order.findOneAndUpdate(
+      { OrderID: req.params.orderId },
+      { $set: { OrderStatus: "Cancelled" } },
+      { new: true }
+    );
+
+    res.json({ success: true, data: order });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+/**
+ * POST /api/v1/orders/:orderId/duplicate
+ */
+export const duplicateOrder = async (req, res) => {
+  try {
+    const order = await Order.findOne({ OrderID: req.params.orderId });
+
+    const copy = { ...order._doc };
+    delete copy._id;
+
+    copy.OrderID = `COPY-${order.OrderID}`;
+
+    const newOrder = await Order.create(copy);
+
     res.json({ success: true, data: newOrder });
   } catch (err) {
-    next(err);
+    res.status(500).json({ success: false, message: err.message });
   }
 };
 
-export const getInvoice = async (req, res, next) => {
+/**
+ * GET /api/v1/orders/:orderId/invoice
+ */
+export const getInvoice = async (req, res) => {
   try {
-    const order = await Order.findOne({ orderId: req.params.orderId });
-    res.json({ success: true, data: order });
+    const order = await Order.findOne({ OrderID: req.params.orderId });
+
+    const invoice = {
+      invoiceId: `INV-${order.OrderID}`,
+      customer: order.CustomerName,
+      items: {
+        product: order.ProductName,
+        quantity: order.Quantity,
+        unitPrice: order.UnitPrice,
+      },
+      total: order.TotalAmount,
+      paymentMethod: order.PaymentMethod,
+      status: order.OrderStatus,
+    };
+
+    res.json({ success: true, data: invoice });
   } catch (err) {
-    next(err);
-  }
-};
-
-
-// =============================
-// 🔍 SEARCH
-// =============================
-
-export const searchOrders = async (req, res, next) => {
-  try {
-    const q = req.query.q;
-    const orders = await Order.find({
-      $or: [
-        { "customer.name": { $regex: q, $options: "i" } },
-        { orderStatus: { $regex: q, $options: "i" } }
-      ]
-    });
-    res.json({ success: true, data: orders });
-  } catch (err) {
-    next(err);
-  }
-};
-
-export const searchByCustomer = async (req, res, next) => {
-  try {
-    const data = await Order.find({
-      "customer.name": { $regex: req.query.q, $options: "i" }
-    });
-    res.json({ success: true, data });
-  } catch (err) {
-    next(err);
-  }
-};
-
-export const searchByProduct = async (req, res, next) => {
-  try {
-    const data = await Order.find({
-      "items.productName": { $regex: req.query.q, $options: "i" }
-    });
-    res.json({ success: true, data });
-  } catch (err) {
-    next(err);
-  }
-};
-
-export const searchByCategory = async (req, res, next) => {
-  try {
-    const data = await Order.find({
-      "items.category": { $regex: req.query.q, $options: "i" }
-    });
-    res.json({ success: true, data });
-  } catch (err) {
-    next(err);
-  }
-};
-
-export const searchByStatus = async (req, res, next) => {
-  try {
-    const data = await Order.find({
-      orderStatus: { $regex: req.query.q, $options: "i" }
-    });
-    res.json({ success: true, data });
-  } catch (err) {
-    next(err);
-  }
-};
-
-export const searchByPayment = async (req, res, next) => {
-  try {
-    const data = await Order.find({
-      "payment.method": { $regex: req.query.q, $options: "i" }
-    });
-    res.json({ success: true, data });
-  } catch (err) {
-    next(err);
-  }
-};
-
-export const searchByLocation = async (req, res, next) => {
-  try {
-    const data = await Order.find({
-      "shippingAddress.city": { $regex: req.query.q, $options: "i" }
-    });
-    res.json({ success: true, data });
-  } catch (err) {
-    next(err);
-  }
-};
-
-export const searchByDate = async (req, res, next) => {
-  try {
-    const data = await Order.find({
-      orderDate: new Date(req.query.q)
-    });
-    res.json({ success: true, data });
-  } catch (err) {
-    next(err);
-  }
-};
-
-export const searchByTracking = async (req, res) => {
-  res.json({ success: true, message: "Tracking optional" });
-};
-
-
-// =============================
-// 🎯 FILTER
-// =============================
-
-export const filterByStatus = (req, res, next) =>
-  Order.find({ orderStatus: req.query.type })
-    .then(data => res.json({ success: true, data }))
-    .catch(next);
-
-export const filterByPayment = (req, res, next) =>
-  Order.find({ "payment.method": req.query.method })
-    .then(data => res.json({ success: true, data }))
-    .catch(next);
-
-export const filterByPrice = (req, res, next) =>
-  Order.find({
-    "pricing.totalAmount": {
-      $gte: Number(req.query.min),
-      $lte: Number(req.query.max)
-    }
-  })
-    .then(data => res.json({ success: true, data }))
-    .catch(next);
-
-
-// =============================
-// 📦 BULK
-// =============================
-
-export const bulkCreateOrders = async (req, res, next) => {
-  try {
-    const data = await Order.insertMany(req.body);
-    res.json({ success: true, data });
-  } catch (err) {
-    next(err);
-  }
-};
-
-export const bulkUpdateOrders = async (req, res, next) => {
-  try {
-    const updates = req.body;
-    const results = await Promise.all(
-      updates.map(item =>
-        Order.findOneAndUpdate({ orderId: item.orderId }, item)
-      )
-    );
-    res.json({ success: true, data: results });
-  } catch (err) {
-    next(err);
-  }
-};
-
-export const bulkDeleteOrders = async (req, res, next) => {
-  try {
-    await Order.deleteMany({ orderId: { $in: req.body.ids } });
-    res.json({ success: true });
-  } catch (err) {
-    next(err);
-  }
-};
-
-
-// =============================
-// 📊 ANALYTICS
-// =============================
-
-export const getTotalRevenue = async (req, res, next) => {
-  try {
-    const result = await Order.aggregate([
-      { $group: { _id: null, total: { $sum: "$pricing.totalAmount" } } }
-    ]);
-    res.json({ success: true, data: result });
-  } catch (err) {
-    next(err);
-  }
-};
-
-export const getMonthlyRevenue = async (req, res, next) => {
-  try {
-    const data = await Order.aggregate([
-      {
-        $group: {
-          _id: { $month: "$orderDate" },
-          total: { $sum: "$pricing.totalAmount" }
-        }
-      }
-    ]);
-    res.json({ success: true, data });
-  } catch (err) {
-    next(err);
-  }
-};
-
-export const getOrderCount = async (req, res, next) => {
-  try {
-    const count = await Order.countDocuments();
-    res.json({ success: true, data: count });
-  } catch (err) {
-    next(err);
+    res.status(500).json({ success: false, message: err.message });
   }
 };
