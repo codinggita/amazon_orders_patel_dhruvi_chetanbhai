@@ -1,6 +1,7 @@
 import express from "express";
 import orderRoutes from "./routes/order.route.js";
 import analyticsRoutes from "./routes/analytics.route.js";
+import orderStatsRoutes from "./routes/orderStats.route.js";
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.get("/api/v1", (req, res) => {
 
 // routes
 app.use("/api/v1/orders", orderRoutes); 
-app.use("/api/v1/analytics", analyticsRoutes); // Add analytics routes
+app.use("/api/v1/analytics", analyticsRoutes); 
+app.use("/api/v1/stats", orderStatsRoutes); // New route for order stats
 
 export default app;
