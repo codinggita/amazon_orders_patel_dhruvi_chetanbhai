@@ -3,6 +3,7 @@ import searchRouter from "./orderSearch.route.js";
 import filterRouter from "./orderFilter.route.js";
 import paginationRouter from "./orderPagination.route.js";
 import sortRouter from "./orderSort.route.js";
+import analyticsRouter from "./analytics.route.js";
 
 import {
   getAllOrders,
@@ -33,7 +34,7 @@ router.use("/search", searchRouter);
 router.use("/filter", filterRouter);
 router.use("/", sortRouter);
 router.use("/", paginationRouter);
-
+router.use("/analytics", analyticsRouter);
 /**
  * ======================
  * CRUD (NON-CONFLICT SAFE)
