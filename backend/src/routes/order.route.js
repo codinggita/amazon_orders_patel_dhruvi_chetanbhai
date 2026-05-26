@@ -2,6 +2,7 @@ import express from "express";
 import searchRouter from "./orderSearch.route.js";
 import filterRouter from "./orderFilter.route.js";
 import paginationRouter from "./orderPagination.route.js";
+import sortRouter from "./orderSort.route.js";
 
 import {
   getAllOrders,
@@ -23,28 +24,39 @@ import {
 
 const router = express.Router();
 
-
-// ======================
-// ✅ SEARCH ROUTES FIRST
-// ======================
+/**
+ * ======================
+ * ✅ FEATURE ROUTES FIRST
+ * ======================
+ */
 router.use("/search", searchRouter);
 router.use("/filter", filterRouter);
+router.use("/", sortRouter);
 router.use("/", paginationRouter);
 
-// ======================
-// CRUD ROUTES
-// ======================
-router.get("/", getAllOrders);
-router.get("/:orderId", getOrderById);
+/**
+ * ======================
+ * CRUD (NON-CONFLICT SAFE)
+ * ======================
+ */
 router.post("/", createOrder);
+router.get("/", getAllOrders);
+
+/**
+ * ======================
+ * PARAM ROUTES LAST (IMPORTANT FIX)
+ * ======================
+ */
+router.get("/:orderId", getOrderById);
 router.put("/:orderId", replaceOrder);
 router.patch("/:orderId", updateOrder);
 router.delete("/:orderId", deleteOrder);
 
-
-// ======================
-// EXTRA ORDER ACTION ROUTES
-// ======================
+/**
+ * ======================
+ * EXTRA ORDER ACTION ROUTES
+ * ======================
+ */
 router.get("/:orderId/exists", checkOrderExists);
 router.get("/:orderId/summary", getOrderSummary);
 router.get("/:orderId/items", getOrderItems);
