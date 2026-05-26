@@ -1,23 +1,60 @@
-// models/shipment.model.js
-
 import mongoose from "mongoose";
 
 const shipmentSchema = new mongoose.Schema(
   {
-    OrderID: {
+    shipmentId: {
+      type: String,
+      required: true,
+      unique: true
+    },
+
+    orderId: {
       type: String,
       required: true
     },
 
-    ShipmentStatus: {
-      type: String,
-      enum: ["Pending", "Shipped", "Delivered", "Returned"],
-      default: "Pending"
+    shippedAt: {
+      type: Date,
+      required: true
     },
 
-    City: String,
-    State: String,
-    Country: String
+    deliveredAt: {
+      type: Date,
+      required: false
+    },
+
+    status: {
+      type: String,
+      enum: ["Shipped", "In Transit", "Delivered", "Returned"],
+      default: "Shipped"
+    },
+
+    carrier: {
+      type: String,
+      default: "Unknown"
+    },
+
+    trackingNumber: {
+      type: String,
+      unique: true
+    },
+
+    origin: {
+      city: String,
+      state: String,
+      country: String
+    },
+
+    destination: {
+      city: String,
+      state: String,
+      country: String
+    },
+
+    shippingCost: {
+      type: Number,
+      default: 0
+    }
   },
   { timestamps: true }
 );
