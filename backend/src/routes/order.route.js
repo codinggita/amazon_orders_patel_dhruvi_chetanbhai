@@ -1,6 +1,7 @@
 import express from "express";
 import searchRouter from "./orderSearch.route.js";
 import filterRouter from "./orderFilter.route.js";
+import paginationRouter from "./orderPagination.route.js";
 
 import {
   getAllOrders,
@@ -28,7 +29,7 @@ const router = express.Router();
 // ======================
 router.use("/search", searchRouter);
 router.use("/filter", filterRouter);
-
+router.use("/", paginationRouter);
 
 // ======================
 // CRUD ROUTES
