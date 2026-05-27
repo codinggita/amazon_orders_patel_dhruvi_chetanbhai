@@ -1,50 +1,72 @@
-// models/user.model.js
-
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
   {
-    customerId: {
-      type: String,
-      unique: true,
-      required: true
-    },
-
     name: {
       type: String,
       required: true,
-      trim: true
+      trim: true,
     },
 
     email: {
       type: String,
       required: true,
       unique: true,
-      lowercase: true
+      lowercase: true,
+      index: true,
     },
 
     password: {
       type: String,
       required: true,
-      minlength: 6
-    },
-
-    address: {
-      city: String,
-      state: String,
-      country: String
     },
 
     role: {
       type: String,
       enum: ["user", "admin"],
-      default: "user"
+      default: "user",
     },
 
+    isEmailVerified: {
+      type: Boolean,
+      default: false,
+    },
+
+    otp: {
+      code: String,
+      expiresAt: Date,
+    },
+
+    resetPasswordToken: String,
+    resetPasswordExpires: Date,
+
+    refreshTokens: [
+      {
+        token: String,
+        createdAt: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
+
+    sessions: [
+      {
+        device: String,
+        ip: String,
+        userAgent: String,
+        createdAt: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
+
+    lastLogin: Date,
     isActive: {
       type: Boolean,
-      default: true
-    }
+      default: true,
+    },
   },
   { timestamps: true }
 );

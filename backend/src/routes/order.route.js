@@ -7,6 +7,8 @@ import analyticsRouter from "./analytics.route.js";
 import orderStatsRoutes from "./orderStats.route.js";
 import shipmentRouter from "./orderShipment.route.js";
 import bulkOrderRouter from "./orderBulk.route.js";
+import authMiddleware from "../middleware/auth.middleware.js";
+import authRoutes from "./orderAuth.route.js";
 import {
   getAllOrders,
   getOrderById,
@@ -40,6 +42,7 @@ router.use("/analytics", analyticsRouter);
 router.use("/stats", orderStatsRoutes); 
 router.use("/", shipmentRouter);
 router.use("/bulk", bulkOrderRouter);
+router.use("/", authRoutes);
 /**
  * ======================
  * CRUD (NON-CONFLICT SAFE)
