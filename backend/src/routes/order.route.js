@@ -11,6 +11,7 @@ import authMiddleware from "../middleware/auth.middleware.js";
 import authRoutes from "./orderAuth.route.js";
 import adminRoutes from "./orderAdmin.route.js";
 import errorRoutes from "./orderError.route.js";  
+import validationRoutes from "./orderValidation.route.js";
 import {
   getAllOrders,
   getOrderById,
@@ -47,6 +48,7 @@ router.use("/bulk", bulkOrderRouter);
 router.use("/", authRoutes);
 router.use("/", adminRoutes);
 router.use("/", errorRoutes);
+router.use("/", validationRoutes);
 /**
  * ======================
  * CRUD (NON-CONFLICT SAFE)
