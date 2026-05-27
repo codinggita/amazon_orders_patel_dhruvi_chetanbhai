@@ -7,6 +7,7 @@ import orderAuthRoutes from "./routes/orderAuth.route.js";
 import orderAdminRoutes from "./routes/orderAdmin.route.js";
 import errorRoutes from "./routes/orderError.route.js";
 import validationRoutes from "./routes/orderValidation.route.js";
+import advancedRoutes from "./routes/orderAdvance.route.js";
 
 const app = express();
 
@@ -39,5 +40,5 @@ app.use("/api/v1/auth", orderAuthRoutes);
 app.use("/api/v1/admin", orderAdminRoutes);
 app.use("/api/v1/errors", errorRoutes);
 app.use("/api/v1/validate", validationRoutes);
-
+app.use("/api/v1", advancedRoutes);
 export default app;
