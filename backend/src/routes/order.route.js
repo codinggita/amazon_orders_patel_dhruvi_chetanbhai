@@ -12,6 +12,7 @@ import authRoutes from "./orderAuth.route.js";
 import adminRoutes from "./orderAdmin.route.js";
 import errorRoutes from "./orderError.route.js";  
 import validationRoutes from "./orderValidation.route.js";
+import advancedRoutes from "./orderAdvance.route.js";
 import {
   getAllOrders,
   getOrderById,
@@ -49,6 +50,7 @@ router.use("/", authRoutes);
 router.use("/", adminRoutes);
 router.use("/", errorRoutes);
 router.use("/", validationRoutes);
+router.use("/", advancedRoutes);
 /**
  * ======================
  * CRUD (NON-CONFLICT SAFE)

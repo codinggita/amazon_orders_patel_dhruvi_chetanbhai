@@ -11,7 +11,13 @@ dotenv.config({ path: join(__dirname, ".env") });
 import app from "./app.js";
 import connectDB from "./config/db.js";
 
-const PORT = process.env.PORT || 5000;
+const rawPort = process.env.PORT?.toString().trim() || "";
+const parsedPort = rawPort ? Number.parseInt(rawPort.replace(/[^0-9].*$/, ""), 10) : 5000;
+const PORT = Number.isInteger(parsedPort) && parsedPort >= 0 && parsedPort < 65536 ? parsedPort : 5000;
+
+if (rawPort && String(parsedPort) !== rawPort) {
+  console.warn(`Invalid PORT env value "${rawPort}". Falling back to ${PORT}.`);
+}
 
 const startServer = async () => {
   try {
