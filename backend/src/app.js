@@ -6,6 +6,7 @@ import orderShipmentRoutes from "./routes/orderShipment.route.js";
 import orderAuthRoutes from "./routes/orderAuth.route.js";
 import orderAdminRoutes from "./routes/orderAdmin.route.js";
 import errorRoutes from "./routes/orderError.route.js";
+import validationRoutes from "./routes/orderValidation.route.js";
 
 const app = express();
 
@@ -37,5 +38,6 @@ app.use("/api/v1/shipping", orderShipmentRoutes);
 app.use("/api/v1/auth", orderAuthRoutes);
 app.use("/api/v1/admin", orderAdminRoutes);
 app.use("/api/v1/errors", errorRoutes);
+app.use("/api/v1/validate", validationRoutes);
 
 export default app;
