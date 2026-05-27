@@ -10,33 +10,47 @@ const shipmentSchema = new mongoose.Schema(
 
     orderId: {
       type: String,
-      required: true
+      required: true,
+      index: true
     },
 
     shippedAt: {
-      type: Date,
-      required: true
+      type: Date
     },
 
     deliveredAt: {
-      type: Date,
-      required: false
+      type: Date
     },
 
     status: {
       type: String,
-      enum: ["Shipped", "In Transit", "Delivered", "Returned"],
-      default: "Shipped"
+      enum: ["Pending", "Shipped", "In Transit", "Delivered", "Returned", "Rescheduled"],
+      default: "Pending",
+      index: true
     },
 
     carrier: {
       type: String,
-      default: "Unknown"
+      required: true
     },
 
     trackingNumber: {
       type: String,
-      unique: true
+      unique: true,
+      required: true
+    },
+
+    shippingLabelUrl: {
+      type: String
+    },
+
+    rescheduledAt: {
+      type: Date
+    },
+
+    shippingCost: {
+      type: Number,
+      default: 0
     },
 
     origin: {
@@ -49,14 +63,13 @@ const shipmentSchema = new mongoose.Schema(
       city: String,
       state: String,
       country: String
-    },
-
-    shippingCost: {
-      type: Number,
-      default: 0
     }
   },
-  { timestamps: true }
+  {
+    timestamps: true
+  }
 );
 
-export default mongoose.model("Shipment", shipmentSchema);
+const ShipmentModel = mongoose.models.Shipment || mongoose.model("Shipment", shipmentSchema);
+
+export default ShipmentModel;

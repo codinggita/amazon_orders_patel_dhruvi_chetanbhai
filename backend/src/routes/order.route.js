@@ -5,6 +5,7 @@ import paginationRouter from "./orderPagination.route.js";
 import sortRouter from "./orderSort.route.js";
 import analyticsRouter from "./analytics.route.js";
 import orderStatsRoutes from "./orderStats.route.js";
+import shipmentRouter from "./orderShipment.route.js";
 import {
   getAllOrders,
   getOrderById,
@@ -36,6 +37,7 @@ router.use("/", sortRouter);
 router.use("/", paginationRouter);
 router.use("/analytics", analyticsRouter);
 router.use("/stats", orderStatsRoutes); 
+router.use("/", shipmentRouter);
 /**
  * ======================
  * CRUD (NON-CONFLICT SAFE)
