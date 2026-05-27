@@ -81,7 +81,7 @@ export const replaceOrder = async (req, res) => {
     const order = await Order.findOneAndReplace(
       { OrderID: req.params.orderId },
       req.body,
-      { new: true }
+      { returnDocument: 'after' }
     );
 
     res.json({ success: true, data: order });
@@ -101,7 +101,7 @@ export const updateOrder = async (req, res) => {
     const order = await Order.findOneAndUpdate(
       { OrderID: req.params.orderId },
       { $set: req.body },
-      { new: true, runValidators: true }
+      { returnDocument: 'after', runValidators: true }
     );
 
     if (!order) {
@@ -303,7 +303,7 @@ export const cancelOrder = async (req, res) => {
     const order = await Order.findOneAndUpdate(
       { OrderID: req.params.orderId },
       { $set: { OrderStatus: "Cancelled" } },
-      { new: true }
+      { returnDocument: 'after' }
     );
 
     res.json({ success: true, data: order });
