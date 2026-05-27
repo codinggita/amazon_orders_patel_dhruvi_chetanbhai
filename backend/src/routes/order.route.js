@@ -10,6 +10,7 @@ import bulkOrderRouter from "./orderBulk.route.js";
 import authMiddleware from "../middleware/auth.middleware.js";
 import authRoutes from "./orderAuth.route.js";
 import adminRoutes from "./orderAdmin.route.js";
+import errorRoutes from "./orderError.route.js";  
 import {
   getAllOrders,
   getOrderById,
@@ -45,6 +46,7 @@ router.use("/", shipmentRouter);
 router.use("/bulk", bulkOrderRouter);
 router.use("/", authRoutes);
 router.use("/", adminRoutes);
+router.use("/", errorRoutes);
 /**
  * ======================
  * CRUD (NON-CONFLICT SAFE)
