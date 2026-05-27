@@ -3,6 +3,7 @@ import orderRoutes from "./routes/order.route.js";
 import analyticsRoutes from "./routes/analytics.route.js";
 import orderStatsRoutes from "./routes/orderStats.route.js";
 import orderShipmentRoutes from "./routes/orderShipment.route.js";
+import orderAuthRoutes from "./routes/orderAuth.route.js";
 
 const app = express();
 
@@ -31,5 +32,6 @@ app.use("/api/v1/orders", orderRoutes);
 app.use("/api/v1/analytics", analyticsRoutes); 
 app.use("/api/v1/stats", orderStatsRoutes); 
 app.use("/api/v1/shipping", orderShipmentRoutes);
+app.use("/api/v1/auth", orderAuthRoutes);
 
 export default app;
