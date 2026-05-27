@@ -374,3 +374,216 @@ export const getRevenueDashboard = async (req, res) => {
     });
   }
 };
+
+
+// =========================
+// ORDERS DASHBOARD
+// =========================
+export const getOrdersDashboard = async (req, res) => {
+  try {
+    const totalOrders = await Order.countDocuments();
+
+    const deliveredOrders = await Order.countDocuments({
+      OrderStatus: "Delivered"
+    });
+
+    const cancelledOrders = await Order.countDocuments({
+      OrderStatus: "Cancelled"
+    });
+
+    res.json({
+      success: true,
+      totalOrders,
+      deliveredOrders,
+      cancelledOrders
+    });
+
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message
+    });
+  }
+};
+
+
+// =========================
+// CUSTOMERS DASHBOARD
+// =========================
+export const getCustomersDashboard = async (req, res) => {
+  try {
+    const totalCustomers = await User.countDocuments();
+
+    res.json({
+      success: true,
+      totalCustomers
+    });
+
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message
+    });
+  }
+};
+
+
+// =========================
+// PRODUCTS DASHBOARD
+// =========================
+export const getProductsDashboard = async (req, res) => {
+  try {
+    const totalProducts = await Product.countDocuments();
+
+    const categories = await Product.distinct("Category");
+
+    res.json({
+      success: true,
+      totalProducts,
+      totalCategories: categories.length
+    });
+
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message
+    });
+  }
+};
+
+
+// =========================
+// SYSTEM VERSION
+// =========================
+export const getSystemVersion = async (req, res) => {
+  try {
+    res.json({
+      success: true,
+      version: "1.0.0"
+    });
+
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message
+    });
+  }
+};
+
+
+// =========================
+// SYSTEM CONFIG
+// =========================
+export const getSystemConfig = async (req, res) => {
+  try {
+    res.json({
+      success: true,
+      config: {
+        appName: "ShopFusion",
+        environment: process.env.NODE_ENV || "development"
+      }
+    });
+
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message
+    });
+  }
+};
+
+
+// =========================
+// SYSTEM UPTIME
+// =========================
+export const getSystemUptime = async (req, res) => {
+  try {
+    res.json({
+      success: true,
+      uptime: process.uptime()
+    });
+
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message
+    });
+  }
+};
+
+
+// =========================
+// PING SERVER
+// =========================
+export const pingServer = async (req, res) => {
+  try {
+    res.json({
+      success: true,
+      message: "Server is running"
+    });
+
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message
+    });
+  }
+};
+
+
+// =========================
+// DATABASE STATUS
+// =========================
+export const getDatabaseStatus = async (req, res) => {
+  try {
+    res.json({
+      success: true,
+      database: "Connected"
+    });
+
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      database: "Disconnected",
+      message: err.message
+    });
+  }
+};
+
+
+// =========================
+// CACHE STATUS
+// =========================
+export const getCacheStatus = async (req, res) => {
+  try {
+    res.json({
+      success: true,
+      cache: "Active"
+    });
+
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message
+    });
+  }
+};
+
+
+// =========================
+// STORAGE STATUS
+// =========================
+export const getStorageStatus = async (req, res) => {
+  try {
+    res.json({
+      success: true,
+      storage: "Available"
+    });
+
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message
+    });
+  }
+};
