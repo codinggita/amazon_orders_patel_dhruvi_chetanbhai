@@ -3,7 +3,7 @@
 
 ShopFusion is a full-stack multi-vendor marketplace platform where customers can browse and purchase products, while sellers manage inventory, orders, revenue analytics, and shipping operations.
 
-Built using the **MERN Stack**, CartNexus offers a scalable backend architecture, JWT authentication, MongoDB aggregation pipelines, and a modern dashboard-based frontend.
+Built using the **MERN Stack**, ShopFusion offers a scalable backend architecture, JWT authentication, MongoDB aggregation pipelines, and a modern dashboard-based frontend.
 
 ---
 
