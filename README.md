@@ -1,9 +1,7 @@
 # 🚀 ShopFusion 
 ### Multi-Vendor Marketplace Platform (MERN Stack)
 
-ShopFusion is a full-stack multi-vendor marketplace platform where customers can browse and purchase products, while sellers manage inventory, orders, revenue analytics, and shipping operations.
-
-Built using the **MERN Stack**, ShopFusion offers a scalable backend architecture, JWT authentication, MongoDB aggregation pipelines, and a modern dashboard-based frontend.
+ShopFusion is a customer-centric e-commerce platform built with the MERN Stack that enables users to browse products, search and filter items, place orders, track deliveries, and manage their accounts securely. It features JWT authentication, advanced search functionality, order management, and a scalable RESTful API architecture for a seamless online shopping experience.
 
 ---
 
@@ -22,18 +20,6 @@ Built using the **MERN Stack**, ShopFusion offers a scalable backend architectur
 - ⭐ Product Reviews & Ratings
 - 👤 Profile Management
 - 🔔 Notifications
-
-### 🛍️ Seller Capabilities
-- 🔐 Seller Authentication
-- 📊 Seller Dashboard
-- 📦 Product CRUD Operations
-- 📦 Inventory Management
-- 📑 Order Management
-- 🚚 Shipping Status Updates
-- 💰 Revenue Analytics
-- 📈 Sales Reports
-- 🏆 Top Selling Products
-- ⚠️ Low Stock Alerts
 
 ### 📊 Analytics Dashboard
 - 📅 Monthly Revenue
@@ -115,7 +101,6 @@ ShopFusion uses **JWT-based authentication** with role-based access control.
 
 ### 👥 Roles
 - Customer
-- Seller
 
 ### 🔒 Security Measures
 - Password Hashing (bcrypt)
