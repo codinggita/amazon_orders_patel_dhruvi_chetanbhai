@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 import orderRoutes from "./routes/order.route.js";
 import analyticsRoutes from "./routes/analytics.route.js";
 import orderStatsRoutes from "./routes/orderStats.route.js";
@@ -10,6 +11,24 @@ import validationRoutes from "./routes/orderValidation.route.js";
 import advancedRoutes from "./routes/orderAdvance.route.js";
 
 const app = express();
+
+const allowedOrigins = process.env.CORS_ORIGINS
+  ? process.env.CORS_ORIGINS.split(",").map((origin) => origin.trim())
+  : ["http://localhost:3000"];
+
+const corsOptions = {
+  origin(origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("CORS policy: origin not allowed"));
+    }
+  },
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
+app.options(/.*/, cors(corsOptions));
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -42,3 +61,5 @@ app.use("/api/v1/errors", errorRoutes);
 app.use("/api/v1/validate", validationRoutes);
 app.use("/api/v1", advancedRoutes);
 export default app;
+
+
